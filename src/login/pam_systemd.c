@@ -262,6 +262,12 @@ _public_ PAM_EXTERN int pam_sm_open_session(
                 if (r < 0 && r != -ENOENT)
                         return PAM_SESSION_ERR;
 
+                if (!rt) {
+                        pam_syslog(handle, LOG_WARNING, "Could not find XDG_RUNTIME_DIR in %s, using default", p);
+                        if (asprintf(&rt, "/run/user/"UID_FMT, pw->pw_uid) < 0)
+                                return PAM_BUF_ERR;
+                }
+
                 if (rt)  {
                         r = pam_misc_setenv(handle, "XDG_RUNTIME_DIR", rt, 0);
                         if (r != PAM_SUCCESS) {
