@@ -453,6 +453,10 @@ int user_start(User *u) {
         if (r < 0)
                 return r;
 
+        /* Save the user data so far, because pam_systemd will read the
+         * XDG_RUNTIME_DIR out of it while starting up systemd --user */
+        user_save(u);
+
         /* Spawn user systemd */
         r = user_start_service(u);
         if (r < 0)
